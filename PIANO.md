@@ -24,17 +24,20 @@ fa suonare un metronomo e misura la precisione ritmica rispetto a un esercizio i
 ## Struttura del codice
 
 ```
-drumtraingame/
-  electron/main.ts        finestra, permessi MIDI, backgroundThrottling: false
-  src/
-    midi/                 MidiInput (accesso + eventi), PadMapping (nota → strumento, modalità "learn")
-    audio/                Metronome (scheduler con lookahead), clock (conversione orologio audio ↔ performance.now)
-    engine/               Exercise (modello), Grid (colpi attesi), Matcher (abbinamento), Scorer (statistiche)
+in-the-pocket/
+  src/main/index.ts       processo Electron: finestra, permessi MIDI, backgroundThrottling: false
+  src/preload/            ponte tra Electron e interfaccia (per ora vuoto)
+  src/renderer/src/       l'app vera e propria
+    midi/                 MidiMonitor ✅, poi MidiInput (accesso + eventi), PadMapping (modalità "learn")
+    audio/                Metronome (scheduler con lookahead), clock (orologio audio ↔ performance.now)
+    engine/               ✅ types, rules (soglie/punti), grid, matcher, scorer + engine.test.ts
     calibration/          misura della latenza
     storage/              impostazioni, preset, storico
     ui/                   schermate: Config, Live, Risultati, Storico, Mappatura, Calibrazione
-  tests/                  test Vitest di engine/
 ```
+
+Comandi: `npm install`, `npm run dev` (app con hot reload), `npm test`, `npm run typecheck`,
+`npm run lint`, `npm run build:mac` (app per macOS).
 
 La logica in `engine/` deve essere **pura** (niente MIDI, audio o DOM): riceve tempi in ms e restituisce risultati.
 Così si testa senza batteria.
@@ -74,14 +77,14 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 - [ ] Collegare il modulo via USB e verificare che compaia in *Configurazione MIDI Audio*
 - [ ] Controllare nel menu del modulo le impostazioni MIDI (canale, uscita USB attiva)
 - [ ] Installare Node.js LTS (es. via Homebrew) e git
-- [ ] Clonare la repo da GitHub
-- [ ] Creare il progetto con electron-vite (React + TS) dentro la repo, commit
+- [ ] Clonare la repo da GitHub ed eseguire `npm install`
+- [x] Creare il progetto con electron-vite (React + TS) dentro la repo, commit *(fatto da Windows)*
 
-**Fatto quando**: `npm run dev` apre una finestra Electron vuota.
+**Fatto quando**: `npm run dev` apre la finestra dell'app sul Mac.
 
 ### Fase 1 — Monitor MIDI (prova tecnica)
-- [ ] Permesso MIDI in Electron, elenco dei dispositivi MIDI in ingresso, selezione del modulo
-- [ ] Lista in tempo reale dei colpi: nota, velocity, timestamp
+- [x] Permesso MIDI in Electron, elenco dei dispositivi MIDI in ingresso *(scritto, da provare col modulo)*
+- [x] Lista in tempo reale dei colpi: nota, velocity, timestamp, anche CC per il pedale hi-hat *(idem)*
 - [ ] Riempire la tabella delle note qui sotto colpendo ogni pad
 
 **Fatto quando**: ogni pad della batteria compare nella lista.
@@ -106,7 +109,7 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 
 ### Fase 4 — Esercizio, griglia e abbinamento
 - [ ] Schermata di configurazione dell'esercizio
-- [ ] `Grid`: generazione dei colpi attesi; `Matcher`: abbinamento, extra, mancati (con test Vitest)
+- [x] `Grid`: generazione dei colpi attesi; `Matcher`: abbinamento, extra, mancati (con test Vitest)
 - [ ] Vista dal vivo: corsie per strumento con colpi attesi e colpi reali colorati per precisione,
       indicatore anticipo ← → ritardo, ultimo scarto in ms
 
@@ -118,7 +121,7 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 - [ ] Ripetibile quando cambi cuffie o casse
 
 ### Fase 6 — Punteggio e storico
-- [ ] `Scorer` con le statistiche descritte sopra (con test)
+- [x] `Scorer` con le statistiche descritte sopra (con test)
 - [ ] Schermata risultati: punteggio, statistiche per strumento, grafico dello scarto nel tempo
 - [ ] Storico delle sessioni e preset di esercizi salvati
 

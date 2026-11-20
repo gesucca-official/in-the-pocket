@@ -1,0 +1,26 @@
+# Dipendenze
+node_modules/
+
+# Build
+dist/
+out/
+release/
+*.tsbuildinfo
+
+# Log
+*.log
+npm-debug.log*
+
+# Ambiente
+.env
+.env.*
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Impostazioni locali di Claude Code
+.claude/settings.local.json

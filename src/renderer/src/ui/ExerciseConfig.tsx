@@ -3,17 +3,10 @@ import { activeInstruments } from '../engine/grid'
 import type { Exercise, Subdivision } from '../engine/types'
 import { INSTRUMENTS, INSTRUMENT_LABELS } from '../midi/padMapping'
 import { DEFAULT_EXERCISE } from '../storage/exerciseStorage'
+import { SUBDIVISION_LABELS } from '../presets/describe'
 import { PresetBar } from './PresetBar'
 
 const BAR_OPTIONS = [8, 16, 32, 64, 128]
-
-const SUBDIVISION_LABELS: Record<Subdivision, string> = {
-  off: 'spento',
-  quarter: '4ti',
-  eighth: '8vi',
-  eighthTriplet: 'terzine di 8vo',
-  sixteenth: '16esimi'
-}
 
 interface Props {
   exercise: Exercise

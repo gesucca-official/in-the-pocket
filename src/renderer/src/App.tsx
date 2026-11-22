@@ -3,9 +3,10 @@ import { CalibrationPanel } from './calibration/CalibrationPanel'
 import { MetronomePanel } from './audio/MetronomePanel'
 import { MappingPanel } from './midi/MappingPanel'
 import { MidiMonitor } from './midi/MidiMonitor'
+import { HistoryPanel } from './results/HistoryPanel'
 import { ExercisePanel } from './ui/ExercisePanel'
 
-type Tab = 'play' | 'tools'
+type Tab = 'play' | 'history' | 'tools'
 
 function App(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('play')
@@ -18,6 +19,9 @@ function App(): React.JSX.Element {
           <button className={tab === 'play' ? 'active' : ''} onClick={() => setTab('play')}>
             Esercizio
           </button>
+          <button className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>
+            Storico
+          </button>
           <button className={tab === 'tools' ? 'active' : ''} onClick={() => setTab('tools')}>
             Strumenti
           </button>
@@ -25,6 +29,8 @@ function App(): React.JSX.Element {
       </header>
       {tab === 'play' ? (
         <ExercisePanel />
+      ) : tab === 'history' ? (
+        <HistoryPanel />
       ) : (
         <>
           <CalibrationPanel />

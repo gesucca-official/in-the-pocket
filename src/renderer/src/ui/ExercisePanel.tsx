@@ -1,37 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Metronome } from '../audio/Metronome'
 import { ExerciseSession } from '../engine/session'
-import { summarize, type Stats } from '../engine/scorer'
 import type { Exercise } from '../engine/types'
-import { INSTRUMENT_LABELS, noteToInstrument } from '../midi/padMapping'
+import { noteToInstrument } from '../midi/padMapping'
 import { useMidiNoteOn } from '../midi/useMidiNoteOn'
 import { hasCalibration, loadLatency } from '../storage/calibrationStorage'
 import { loadMapping } from '../storage/padMappingStorage'
 import { loadExercise, saveExercise } from '../storage/exerciseStorage'
+import { buildRecord, type SessionRecord } from '../results/record'
+import { ResultsView } from '../results/ResultsView'
+import { addRecord } from '../storage/historyStorage'
 import { ExerciseConfig } from './ExerciseConfig'
 import { LiveView } from './LiveView'
 
 type Phase = 'config' | 'starting' | 'running' | 'done'
-
-function StatsRow({ label, s }: { label: string; s: Stats }): React.JSX.Element {
-  const sign = s.meanOffsetMs > 0 ? '+' : ''
-  return (
-    <tr>
-      <td>{label}</td>
-      <td>{s.accuracy.toFixed(0)}%</td>
-      <td>
-        {s.hits}/{s.expected}
-      </td>
-      <td>{s.misses}</td>
-      <td>{s.extras}</td>
-      <td>
-        {sign}
-        {s.meanOffsetMs.toFixed(1)} ms
-      </td>
-      <td>{s.stdDevMs.toFixed(1)} ms</td>
-    </tr>
-  )
-}
 
 /** Fase 4: imposta l'esercizio, suona con il click e guarda in tempo reale dove cadono i colpi. */
 export function ExercisePanel(): React.JSX.Element {
@@ -39,6 +21,7 @@ export function ExercisePanel(): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>('config')
   const [session, setSession] = useState<ExerciseSession | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [record, setRecord] = useState<SessionRecord | null>(null)
   const metronome = useRef<Metronome | null>(null)
   const sessionRef = useRef<ExerciseSession | null>(null)
 
@@ -82,7 +65,13 @@ export function ExercisePanel(): React.JSX.Element {
 
   const over = useCallback((): void => {
     metronome.current?.stop()
-    sessionRef.current?.finish()
+    const finished = sessionRef.current
+    if (finished) {
+      finished.finish()
+      const r = buildRecord(finished, crypto.randomUUID(), new Date())
+      addRecord(r)
+      setRecord(r)
+    }
     setPhase('done')
   }, [])
 
@@ -90,8 +79,6 @@ export function ExercisePanel(): React.JSX.Element {
     metronome.current?.stop()
     setPhase('config')
   }
-
-  const summary = phase === 'done' && session ? summarize(session.events) : null
 
   return (
     <section className="panel">
@@ -116,34 +103,15 @@ export function ExercisePanel(): React.JSX.Element {
           </p>
         </>
       )}
-      {summary && (
+      {phase === 'done' && record && (
         <>
-          <table>
-            <thead>
-              <tr>
-                <th />
-                <th>Precisione</th>
-                <th>Colpiti</th>
-                <th>Mancati</th>
-                <th>Colpi in più</th>
-                <th>Scarto medio</th>
-                <th>Costanza (deviazione)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <StatsRow label="Totale" s={summary.total} />
-              {session?.activeInstruments.map((inst) => {
-                const s = summary.byInstrument[inst]
-                return s && <StatsRow key={inst} label={INSTRUMENT_LABELS[inst]} s={s} />
-              })}
-            </tbody>
-          </table>
           <p>
             <button className="primary" onClick={() => void start()}>
               Riprova
             </button>{' '}
             <button onClick={() => setPhase('config')}>Nuovo esercizio</button>
           </p>
+          <ResultsView record={record} />
         </>
       )}
     </section>

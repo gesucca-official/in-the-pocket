@@ -33,6 +33,7 @@ in-the-pocket/
     engine/               ✅ types, rules (soglie/punti), grid, matcher, scorer + engine.test.ts
     calibration/          ✅ misura della latenza (calibrate.ts + CalibrationPanel)
     storage/              impostazioni, preset, storico
+    results/              ✅ record, analisi (tendenza, deriva), grafico, risultati, storico
     ui/                   schermate: Config, Live, Risultati, Storico, Mappatura, Calibrazione
 ```
 
@@ -122,8 +123,8 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 
 ### Fase 6 — Punteggio e storico
 - [x] `Scorer` con le statistiche descritte sopra (con test)
-- [ ] Schermata risultati: punteggio, statistiche per strumento, grafico dello scarto nel tempo
-- [ ] Storico delle sessioni
+- [x] Schermata risultati: punteggio, statistiche per strumento, grafico dello scarto nel tempo
+- [x] Storico delle sessioni
 - [x] Preset di esercizi salvati e beat da praticare (`presets/`, `storage/presetStorage.ts`)
 
 ### Fase 7 — App installabile

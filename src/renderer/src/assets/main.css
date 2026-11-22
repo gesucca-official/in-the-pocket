@@ -222,3 +222,66 @@ input[type='text'] {
   background: var(--panel);
   border-bottom: 1px solid #2c2d34;
 }
+
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-label {
+  fill: #8d8c86;
+  font-size: 12px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 8px 0 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.chart-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.chart-legend i.line {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: #ecebe6;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.score-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 120px;
+}
+
+.insights {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+tr.clickable {
+  cursor: pointer;
+}
+
+tr.clickable:hover td {
+  background: rgba(242, 165, 65, 0.12);
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateGrid, intervalMs, scoredStartMs } from './grid'
+import { activeInstruments, generateGrid, intervalMs, scoredStartMs } from './grid'
 import { Matcher } from './matcher'
 import { rate } from './rules'
 import { summarize } from './scorer'
@@ -105,5 +105,77 @@ describe('scorer', () => {
     expect(rate(25)).toBe('good')
     expect(rate(-50)).toBe('ok')
     expect(rate(51)).toBe('off')
+  })
+})
+
+describe('pattern personalizzati', () => {
+  const ex = (patterns: Exercise['patterns'], over: Partial<Exercise> = {}): Exercise => ({
+    bpm: 120,
+    bars: 2,
+    countInBars: 0,
+    beatsPerBar: 4,
+    parts: {},
+    patterns,
+    ...over
+  })
+
+  it('genera i colpi nelle posizioni del pattern e lo ripete a ogni battuta', () => {
+    // 120 bpm → movimento 500 ms; passi da 16esimo = 125 ms; rullante su 2 e 4 (passi 4 e 12)
+    const grid = generateGrid(ex({ snare: { stepsPerBeat: 4, bars: 1, hits: [4, 12] } }), 0)
+    expect(grid.map((h) => h.timeMs)).toEqual([500, 1500, 2500, 3500])
+  })
+
+  it('supporta pattern lunghi più battute', () => {
+    const grid = generateGrid(
+      ex({ kick: { stepsPerBeat: 2, bars: 2, hits: [0, 8] } }, { bars: 4 }),
+      0
+    )
+    // pattern di 2 battute: 16 passi da 250 ms → colpi a 0 e 2000, poi ripete a 4000 e 6000
+    expect(grid.map((h) => h.timeMs)).toEqual([0, 2000, 4000, 6000])
+  })
+
+  it('supporta le terzine', () => {
+    const grid = generateGrid(
+      ex({ hihat: { stepsPerBeat: 3, bars: 1, hits: [0, 2] } }, { bars: 1 }),
+      0
+    )
+    expect(grid.map((h) => Math.round(h.timeMs))).toEqual([0, 333])
+  })
+
+  it('il pattern ha la precedenza sulla suddivisione uniforme', () => {
+    const grid = generateGrid(
+      ex(
+        { kick: { stepsPerBeat: 1, bars: 1, hits: [0] } },
+        { parts: { kick: 'sixteenth' }, bars: 1 }
+      ),
+      0
+    )
+    expect(grid).toHaveLength(1)
+  })
+
+  it('la finestra segue la distanza minima tra i colpi, con tetto a 100 ms', () => {
+    // kick su 1 e 3: distanza 1000 ms → finestra 500 → tetto 100
+    const wide = generateGrid(ex({ kick: { stepsPerBeat: 4, bars: 1, hits: [0, 8] } }), 0)
+    expect(wide[0].windowMs).toBe(100)
+    // 16esimi vicini a 60 bpm... 240 bpm: passo 62,5 ms → finestra 31,25
+    const tight = generateGrid(
+      ex({ hihat: { stepsPerBeat: 4, bars: 1, hits: [0, 1] } }, { bpm: 240 }),
+      0
+    )
+    expect(tight[0].windowMs).toBeCloseTo(31.25)
+  })
+
+  it('un pattern vuoto spegne lo strumento', () => {
+    const e = ex({ kick: { stepsPerBeat: 4, bars: 1, hits: [] } }, { parts: { kick: 'quarter' } })
+    expect(generateGrid(e, 0)).toHaveLength(0)
+    expect(activeInstruments(e)).toEqual([])
+  })
+
+  it('activeInstruments unisce suddivisioni e pattern', () => {
+    const e = ex(
+      { snare: { stepsPerBeat: 4, bars: 1, hits: [4] } },
+      { parts: { hihat: 'eighth', kick: 'off' } }
+    )
+    expect(activeInstruments(e).sort()).toEqual(['hihat', 'snare'])
   })
 })

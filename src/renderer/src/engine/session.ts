@@ -1,4 +1,4 @@
-import { beatMs, generateGrid, scoredStartMs } from './grid'
+import { activeInstruments, beatMs, generateGrid, scoredStartMs } from './grid'
 import { Matcher } from './matcher'
 import { MAX_WINDOW_MS } from './rules'
 import type { Exercise, ExpectedHit, Instrument, MatchEvent } from './types'
@@ -26,9 +26,7 @@ export class ExerciseSession {
 
   /** Strumenti con una suddivisione attiva, cioè quelli valutati. */
   get activeInstruments(): Instrument[] {
-    return (Object.entries(this.exercise.parts) as [Instrument, string][])
-      .filter(([, sub]) => sub !== 'off')
-      .map(([inst]) => inst)
+    return activeInstruments(this.exercise)
   }
 
   /** `firstClickMs`: istante (performance.now) del primo click del count-in. */

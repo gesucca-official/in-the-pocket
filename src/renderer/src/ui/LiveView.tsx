@@ -40,21 +40,42 @@ export function LiveView({ session, onOver }: Props): React.JSX.Element {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
-    const dpr = window.devicePixelRatio || 1
-    const width = canvas.clientWidth
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    ctx.scale(dpr, dpr)
-
     let raf = 0
     let over = false
-    const lanesW = width - LABEL_W
-    const px = lanesW / SPAN_MS
-    const nowX = LABEL_W + lanesW * NOW_X
+    let width = 0
+    let px = 0
+    let nowX = 0
+
+    // La larghezza si rimisura a ogni frame: la finestra può cambiare dimensione (o non averne
+    // ancora, se era nascosta al montaggio) e il canvas deve seguirla.
+    const resize = (): boolean => {
+      const w = canvas.clientWidth
+      if (w === 0) return false
+      if (w !== width) {
+        const dpr = window.devicePixelRatio || 1
+        width = w
+        canvas.width = w * dpr
+        canvas.height = height * dpr
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        const lanesW = w - LABEL_W
+        px = lanesW / SPAN_MS
+        nowX = LABEL_W + lanesW * NOW_X
+      }
+      return true
+    }
 
     const draw = (): void => {
       const now = performance.now()
       session.flush(now)
+      if (!over && session.isOver(now)) {
+        over = true
+        onOver()
+        return
+      }
+      if (!resize()) {
+        raf = requestAnimationFrame(draw)
+        return
+      }
       const xOf = (t: number): number => nowX + (t - now) * px
       const t0 = now - NOW_X * SPAN_MS
       const t1 = now + (1 - NOW_X) * SPAN_MS
@@ -144,11 +165,6 @@ export function LiveView({ session, onOver }: Props): React.JSX.Element {
 
       drawMeter(ctx, session.events, width, lanes.length * LANE_H)
 
-      if (!over && session.isOver(now)) {
-        over = true
-        onOver()
-        return
-      }
       raf = requestAnimationFrame(draw)
     }
     raf = requestAnimationFrame(draw)

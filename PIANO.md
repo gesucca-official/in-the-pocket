@@ -123,7 +123,8 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 ### Fase 6 — Punteggio e storico
 - [x] `Scorer` con le statistiche descritte sopra (con test)
 - [ ] Schermata risultati: punteggio, statistiche per strumento, grafico dello scarto nel tempo
-- [ ] Storico delle sessioni e preset di esercizi salvati
+- [ ] Storico delle sessioni
+- [x] Preset di esercizi salvati e beat da praticare (`presets/`, `storage/presetStorage.ts`)
 
 ### Fase 7 — App installabile
 - [ ] Build con electron-builder (target mac, `dir` o `dmg`), icona e nome
@@ -133,7 +134,7 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 ### Fase 8 — Extra (a piacere)
 - Speed trainer: +N BPM a ogni giro superato con una soglia di precisione
 - Battute in cui il click si zittisce, per verificare se tieni il tempo da solo
-- Pattern personalizzati (es. rullante solo su 2 e 4) e groove preimpostati
+- ~~Pattern personalizzati (es. rullante solo su 2 e 4) e groove preimpostati~~ *(fatto con la Fase 6: pattern nel motore + 8 beat in `presets/beats.ts`; manca un editor dei pattern)*
 - Dinamiche: costanza della velocity, accenti
 - Click suonato dal modulo via MIDI out, se il modulo lo supporta
 

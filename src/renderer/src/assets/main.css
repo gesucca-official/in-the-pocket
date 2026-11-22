@@ -194,3 +194,17 @@ canvas {
   border-radius: 8px;
   background: #1a1b20;
 }
+
+.presets {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #2c2d34;
+}
+
+.presets .row {
+  margin-bottom: 8px;
+}
+
+input[type='text'] {
+  min-width: 180px;
+}

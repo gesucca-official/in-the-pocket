@@ -1,5 +1,7 @@
+import { activeInstruments } from '../engine/grid'
 import type { Exercise, Subdivision } from '../engine/types'
 import { INSTRUMENTS, INSTRUMENT_LABELS } from '../midi/padMapping'
+import { PresetBar } from './PresetBar'
 
 const SUBDIVISION_LABELS: Record<Subdivision, string> = {
   off: 'spento',
@@ -17,12 +19,17 @@ interface Props {
 
 /** Impostazione dell'esercizio: tempo, battute e una suddivisione per strumento. */
 export function ExerciseConfig({ exercise, onChange, onStart }: Props): React.JSX.Element {
-  const setPart = (inst: (typeof INSTRUMENTS)[number], sub: Subdivision): void =>
-    onChange({ ...exercise, parts: { ...exercise.parts, [inst]: sub } })
-  const hasParts = Object.values(exercise.parts).some((s) => s !== 'off')
+  const setPart = (inst: (typeof INSTRUMENTS)[number], sub: Subdivision | 'pattern'): void => {
+    if (sub === 'pattern') return
+    const patterns = { ...exercise.patterns }
+    delete patterns[inst]
+    onChange({ ...exercise, patterns, parts: { ...exercise.parts, [inst]: sub } })
+  }
+  const hasParts = activeInstruments(exercise).length > 0
 
   return (
     <>
+      <PresetBar exercise={exercise} onChange={onChange} />
       <div className="row">
         <label>
           BPM
@@ -77,9 +84,10 @@ export function ExerciseConfig({ exercise, onChange, onStart }: Props): React.JS
               <td>{INSTRUMENT_LABELS[inst]}</td>
               <td>
                 <select
-                  value={exercise.parts[inst] ?? 'off'}
-                  onChange={(e) => setPart(inst, e.target.value as Subdivision)}
+                  value={exercise.patterns?.[inst] ? 'pattern' : (exercise.parts[inst] ?? 'off')}
+                  onChange={(e) => setPart(inst, e.target.value as Subdivision | 'pattern')}
                 >
+                  {exercise.patterns?.[inst] && <option value="pattern">dal groove</option>}
                   {(Object.keys(SUBDIVISION_LABELS) as Subdivision[]).map((s) => (
                     <option key={s} value={s}>
                       {SUBDIVISION_LABELS[s]}

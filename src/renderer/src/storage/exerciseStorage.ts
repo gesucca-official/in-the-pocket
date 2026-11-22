@@ -1,4 +1,4 @@
-import type { Exercise, Subdivision } from '../engine/types'
+import type { Exercise, Pattern, Subdivision } from '../engine/types'
 
 const KEY = 'itp.exercise'
 
@@ -11,8 +11,17 @@ export const DEFAULT_EXERCISE: Exercise = {
 }
 
 const SUBDIVISIONS: Subdivision[] = ['off', 'quarter', 'eighth', 'eighthTriplet', 'sixteenth']
+const INSTRUMENT_IDS = ['kick', 'snare', 'hihat', 'tom1', 'tom2', 'tom3', 'crash', 'ride']
 
-function isValid(x: unknown): x is Exercise {
+function isValidPattern(p: Pattern, beatsPerBar: number): boolean {
+  if (!Number.isInteger(p.stepsPerBeat) || p.stepsPerBeat < 1 || p.stepsPerBeat > 4) return false
+  if (!Number.isInteger(p.bars) || p.bars < 1 || p.bars > 4) return false
+  if (!Array.isArray(p.hits)) return false
+  const length = p.bars * beatsPerBar * p.stepsPerBeat
+  return p.hits.every((h) => Number.isInteger(h) && h >= 0 && h < length)
+}
+
+export function isValidExercise(x: unknown): x is Exercise {
   const e = x as Exercise
   return (
     !!e &&
@@ -25,14 +34,18 @@ function isValid(x: unknown): x is Exercise {
     e.countInBars >= 0 &&
     e.beatsPerBar === 4 &&
     !!e.parts &&
-    Object.values(e.parts).every((s) => SUBDIVISIONS.includes(s))
+    Object.values(e.parts).every((s) => SUBDIVISIONS.includes(s)) &&
+    (e.patterns === undefined ||
+      Object.entries(e.patterns).every(
+        ([inst, p]) => INSTRUMENT_IDS.includes(inst) && isValidPattern(p, e.beatsPerBar)
+      ))
   )
 }
 
 export function loadExercise(storage: Pick<Storage, 'getItem'> = localStorage): Exercise {
   try {
     const parsed: unknown = JSON.parse(storage.getItem(KEY) ?? 'null')
-    if (isValid(parsed)) return parsed
+    if (isValidExercise(parsed)) return parsed
   } catch {
     // dato salvato illeggibile: si riparte dai default
   }

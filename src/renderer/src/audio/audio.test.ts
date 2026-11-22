@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { BeatScheduler, type Beat } from './beatScheduler'
-import { audioToPerfMs, perfMsToAudio } from './clock'
+import { anchorFromContext, audioToPerfMs, perfMsToAudio } from './clock'
 
 type Opts = ConstructorParameters<typeof BeatScheduler>[0]
 
@@ -93,6 +93,14 @@ describe('BeatScheduler', () => {
     expect(last.time).toBeCloseTo(10.1 + 999 * 0.25, 9)
   })
 
+  it('con totalBeats si ferma da solo', () => {
+    const { s, beats, advance } = setup({ totalBeats: 6 })
+    s.start()
+    advance(60)
+    s.tick()
+    expect(beats.map((b) => b.index)).toEqual([0, 1, 2, 3, 4, 5])
+  })
+
   it('stop interrompe la programmazione', () => {
     const { s, beats, advance } = setup()
     s.start()
@@ -115,5 +123,21 @@ describe('clock', () => {
   })
   it('è invertibile', () => {
     expect(perfMsToAudio(audioToPerfMs(7.25, anchor), anchor)).toBeCloseTo(7.25)
+  })
+
+  it('usa il timestamp di uscita quando è valido', () => {
+    const ctx = {
+      currentTime: 2,
+      getOutputTimestamp: () => ({ contextTime: 1.9, performanceTime: 5000 })
+    }
+    expect(anchorFromContext(ctx, () => 9999)).toEqual({ contextTime: 1.9, performanceTime: 5000 })
+  })
+
+  it('ripiega su currentTime/performance.now() se il timestamp è {0, 0} (AudioContext appena creato)', () => {
+    const ctx = {
+      currentTime: 0,
+      getOutputTimestamp: () => ({ contextTime: 0, performanceTime: 0 })
+    }
+    expect(anchorFromContext(ctx, () => 25131)).toEqual({ contextTime: 0, performanceTime: 25131 })
   })
 })

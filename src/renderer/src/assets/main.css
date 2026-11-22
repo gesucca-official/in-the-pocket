@@ -169,3 +169,28 @@ button:hover {
 tr.hit td {
   background: rgba(242, 165, 65, 0.18);
 }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tabs button.active,
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #15161a;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+canvas {
+  display: block;
+  border-radius: 8px;
+  background: #1a1b20;
+}

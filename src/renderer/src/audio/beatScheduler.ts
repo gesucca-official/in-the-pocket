@@ -20,6 +20,8 @@ export interface BeatSchedulerOptions {
   schedule: (beat: Beat) => void
   /** Quanto in anticipo programmare, in secondi. */
   lookahead?: number
+  /** Se presente, dopo questo numero di movimenti non programma più nulla. */
+  totalBeats?: number
   /** Ritardo del primo movimento rispetto allo start, in secondi. */
   startDelay?: number
 }
@@ -63,7 +65,8 @@ export class BeatScheduler {
   tick(): void {
     if (!this.running) return
     const horizon = this.opts.now() + this.lookahead
-    while (this.nextTime < horizon) {
+    const total = this.opts.totalBeats ?? Infinity
+    while (this.nextTime < horizon && this.nextIndex < total) {
       const { beatsPerBar, countInBars } = this.opts
       const index = this.nextIndex
       this.opts.schedule({

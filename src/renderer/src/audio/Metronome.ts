@@ -5,6 +5,8 @@ export interface MetronomeOptions {
   bpm: number
   beatsPerBar: number
   countInBars: number
+  /** Se presente, il click si ferma dopo questo numero di movimenti (count-in incluso). */
+  totalBeats?: number
   /** Chiamata quando un movimento viene programmato; `perfMs` è l'istante di ascolto in performance.now(). */
   onBeat?: (beat: Beat, perfMs: number) => void
 }
@@ -31,12 +33,22 @@ export class Metronome {
     if (this.running) return
     this.ctx ??= new AudioContext({ latencyHint: 'interactive' })
     const ctx = this.ctx
-    if (ctx.state === 'suspended') await ctx.resume()
+    if (ctx.state === 'suspended') {
+      // Se l'audio non si sblocca, meglio un errore chiaro che un'attesa infinita.
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('AudioContext bloccato (stato: ' + ctx.state + ')')),
+          2000
+        )
+      )
+      await Promise.race([ctx.resume(), timeout])
+    }
 
     this.scheduler = new BeatScheduler({
       bpm: this.bpm,
       beatsPerBar: this.opts.beatsPerBar,
       countInBars: this.opts.countInBars,
+      totalBeats: this.opts.totalBeats,
       lookahead: LOOKAHEAD_S,
       now: () => ctx.currentTime,
       schedule: (beat) => {

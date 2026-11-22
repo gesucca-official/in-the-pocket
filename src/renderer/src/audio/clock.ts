@@ -16,10 +16,25 @@ export function perfMsToAudio(perfMs: number, anchor: ClockAnchor): number {
   return anchor.contextTime + (perfMs - anchor.performanceTime) / 1000
 }
 
-export function anchorFromContext(ctx: AudioContext): ClockAnchor {
+/** Parte di AudioContext che serve a ricavare il riferimento (comoda da simulare nei test). */
+export interface ClockSource {
+  currentTime: number
+  getOutputTimestamp(): { contextTime?: number; performanceTime?: number }
+}
+
+/**
+ * Riferimento tra orologio audio e performance.now().
+ * Appena creato, un AudioContext restituisce {0, 0} da getOutputTimestamp(): in quel caso
+ * ripiega su currentTime e performance.now() letti insieme (errore al più la latenza di uscita,
+ * che la calibrazione compenserà).
+ */
+export function anchorFromContext(
+  ctx: ClockSource,
+  now: () => number = () => performance.now()
+): ClockAnchor {
   const ts = ctx.getOutputTimestamp()
-  return {
-    contextTime: ts.contextTime ?? ctx.currentTime,
-    performanceTime: ts.performanceTime ?? performance.now()
+  if (ts.performanceTime && ts.performanceTime > 0 && ts.contextTime !== undefined) {
+    return { contextTime: ts.contextTime, performanceTime: ts.performanceTime }
   }
+  return { contextTime: ctx.currentTime, performanceTime: now() }
 }

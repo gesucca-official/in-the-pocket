@@ -108,9 +108,9 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 **Fatto quando**: il click resta stabile a lungo anche a 200+ BPM.
 
 ### Fase 4 — Esercizio, griglia e abbinamento
-- [ ] Schermata di configurazione dell'esercizio
+- [x] Schermata di configurazione dell'esercizio
 - [x] `Grid`: generazione dei colpi attesi; `Matcher`: abbinamento, extra, mancati (con test Vitest)
-- [ ] Vista dal vivo: corsie per strumento con colpi attesi e colpi reali colorati per precisione,
+- [x] Vista dal vivo: corsie per strumento con colpi attesi e colpi reali colorati per precisione,
       indicatore anticipo ← → ritardo, ultimo scarto in ms
 
 **Fatto quando**: suonando l'esercizio si vede subito se si è avanti o indietro.

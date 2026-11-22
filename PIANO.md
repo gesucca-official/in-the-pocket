@@ -102,8 +102,8 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 - [ ] Mappatura salvata e ricaricata all'avvio
 
 ### Fase 3 — Metronomo
-- [ ] Scheduler con lookahead, click con accento, BPM regolabile, count-in
-- [ ] Conversione orologio audio ↔ `performance.now()` (modulo `clock`)
+- [x] Scheduler con lookahead, click con accento, BPM regolabile, count-in
+- [x] Conversione orologio audio ↔ `performance.now()` (modulo `clock`)
 
 **Fatto quando**: il click resta stabile a lungo anche a 200+ BPM.
 

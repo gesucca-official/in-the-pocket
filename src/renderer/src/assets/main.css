@@ -74,3 +74,76 @@ th {
   font-weight: 500;
   font-size: 0.85rem;
 }
+
+.panel + .panel {
+  margin-top: 16px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+input,
+select,
+button {
+  font: inherit;
+  color: var(--text);
+  background: #2c2d34;
+  border: 1px solid #3a3b44;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+input[type='number'] {
+  width: 80px;
+}
+
+input[type='range'] {
+  flex: 1;
+  min-width: 160px;
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+.beats {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0 8px;
+}
+
+.beat {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2c2d34;
+}
+
+.beat.on {
+  background: var(--text);
+}
+
+.beat.on.accent {
+  background: var(--accent);
+}
+
+.beat.on.countin {
+  opacity: 0.55;
+}

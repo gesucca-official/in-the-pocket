@@ -8,7 +8,7 @@ export interface NoteOn {
   timeMs: number
 }
 
-/** Chiama `handler` a ogni Note On (velocity > 0) di qualsiasi ingresso MIDI. */
+/** Chiama `handler` a ogni nota suonata, cioè Note On con velocity > 0, di qualsiasi ingresso MIDI. */
 export function useMidiNoteOn(handler: (hit: NoteOn) => void): void {
   const handlerRef = useRef(handler)
   useEffect(() => {

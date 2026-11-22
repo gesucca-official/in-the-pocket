@@ -17,7 +17,7 @@ export const INSTRUMENTS: Instrument[] = [
 export const INSTRUMENT_LABELS: Record<Instrument, string> = {
   kick: 'Cassa',
   snare: 'Rullante',
-  hihat: 'Hi-hat',
+  hihat: 'Charleston',
   tom1: 'Tom 1',
   tom2: 'Tom 2',
   tom3: 'Tom 3',

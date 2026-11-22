@@ -118,7 +118,7 @@ export function MidiMonitor(): React.JSX.Element {
             .sort((a, b) => a.kind.localeCompare(b.kind) || a.number - b.number)
             .map((r) => (
               <tr key={`${r.kind}-${r.number}`}>
-                <td>{r.kind === 'note' ? 'Note On' : 'CC'}</td>
+                <td>{r.kind === 'note' ? 'Nota' : 'CC'}</td>
                 <td>{r.number}</td>
                 <td>{r.count}</td>
                 <td>{r.lastValue}</td>
@@ -132,16 +132,16 @@ export function MidiMonitor(): React.JSX.Element {
           <tr>
             <th>Tipo</th>
             <th>Nota / CC</th>
-            <th>Velocity / valore</th>
+            <th>Intensità / valore</th>
             <th>Canale</th>
-            <th>Timestamp (ms)</th>
+            <th>Istante (ms)</th>
             <th>Ingresso</th>
           </tr>
         </thead>
         <tbody>
           {log.map((e) => (
             <tr key={e.key}>
-              <td>{e.kind === 'note' ? 'Note On' : 'CC'}</td>
+              <td>{e.kind === 'note' ? 'Nota' : 'CC'}</td>
               <td>{e.number}</td>
               <td>{e.value}</td>
               <td>{e.channel}</td>

@@ -4,7 +4,7 @@ const KEY = 'itp.exercise'
 
 export const DEFAULT_EXERCISE: Exercise = {
   bpm: 100,
-  bars: 8,
+  bars: 32,
   countInBars: 1,
   beatsPerBar: 4,
   parts: { kick: 'quarter', hihat: 'eighth', snare: 'off' }

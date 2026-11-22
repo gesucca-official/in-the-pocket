@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Exercise } from '../engine/types'
 import { BEAT_PRESETS, exerciseFromBeat } from '../presets/beats'
+import { EXERCISE_PROPOSALS } from '../presets/proposals'
 import { deletePreset, loadPresets, savePreset, type UserPreset } from '../storage/presetStorage'
 
 interface Props {
@@ -8,13 +9,15 @@ interface Props {
   onChange: (exercise: Exercise) => void
 }
 
-/** Beat da praticare (groove famosi) e preset personali dell'esercizio. */
+/** Esercizi proposti, ritmi da studiare (groove classici) e preset personali. */
 export function PresetBar({ exercise, onChange }: Props): React.JSX.Element {
+  const [proposalId, setProposalId] = useState('')
   const [beatId, setBeatId] = useState('')
   const [presets, setPresets] = useState<UserPreset[]>(() => loadPresets())
   const [presetId, setPresetId] = useState('')
   const [name, setName] = useState('')
 
+  const proposal = EXERCISE_PROPOSALS.find((p) => p.id === proposalId)
   const beat = BEAT_PRESETS.find((b) => b.id === beatId)
   const preset = presets.find((p) => p.id === presetId)
 
@@ -22,16 +25,40 @@ export function PresetBar({ exercise, onChange }: Props): React.JSX.Element {
     <div className="presets">
       <div className="row">
         <label>
-          Beat da praticare
+          Esercizi proposti
+          <select
+            value={proposalId}
+            onChange={(e) => {
+              setProposalId(e.target.value)
+              setBeatId('')
+              const p = EXERCISE_PROPOSALS.find((x) => x.id === e.target.value)
+              if (p) onChange(structuredClone(p.exercise))
+            }}
+          >
+            <option value="">— scegli un esercizio —</option>
+            {EXERCISE_PROPOSALS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} ({p.exercise.bpm} BPM)
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {proposal && <p className="muted">{proposal.description}</p>}
+
+      <div className="row">
+        <label>
+          Ritmi da studiare
           <select
             value={beatId}
             onChange={(e) => {
               setBeatId(e.target.value)
+              setProposalId('')
               const b = BEAT_PRESETS.find((x) => x.id === e.target.value)
               if (b) onChange(exerciseFromBeat(b, exercise))
             }}
           >
-            <option value="">— scegli un beat —</option>
+            <option value="">— scegli un ritmo —</option>
             {BEAT_PRESETS.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name} ({b.bpm} BPM)
@@ -59,6 +86,7 @@ export function PresetBar({ exercise, onChange }: Props): React.JSX.Element {
           onClick={() => {
             if (!preset) return
             setBeatId('')
+            setProposalId('')
             onChange(structuredClone(preset.exercise))
           }}
         >

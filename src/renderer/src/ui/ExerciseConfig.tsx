@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import { activeInstruments } from '../engine/grid'
 import type { Exercise, Subdivision } from '../engine/types'
 import { INSTRUMENTS, INSTRUMENT_LABELS } from '../midi/padMapping'
+import { DEFAULT_EXERCISE } from '../storage/exerciseStorage'
 import { PresetBar } from './PresetBar'
+
+const BAR_OPTIONS = [8, 16, 32, 64, 128]
 
 const SUBDIVISION_LABELS: Record<Subdivision, string> = {
   off: 'spento',
@@ -25,11 +29,24 @@ export function ExerciseConfig({ exercise, onChange, onStart }: Props): React.JS
     delete patterns[inst]
     onChange({ ...exercise, patterns, parts: { ...exercise.parts, [inst]: sub } })
   }
+  // cambiando la chiave, PresetBar riparte con le scelte azzerate
+  const [resetCount, setResetCount] = useState(0)
+  const reset = (): void => {
+    onChange(structuredClone(DEFAULT_EXERCISE))
+    setResetCount((n) => n + 1)
+  }
   const hasParts = activeInstruments(exercise).length > 0
 
   return (
     <>
-      <PresetBar exercise={exercise} onChange={onChange} />
+      <div className="startbar">
+        <button className="primary" disabled={!hasParts} onClick={onStart}>
+          Parti
+        </button>
+        <button onClick={reset}>Ripristina valori iniziali</button>
+        {!hasParts && <span className="muted">Scegli almeno uno strumento.</span>}
+      </div>
+      <PresetBar key={resetCount} exercise={exercise} onChange={onChange} />
       <div className="row">
         <label>
           BPM
@@ -52,15 +69,17 @@ export function ExerciseConfig({ exercise, onChange, onStart }: Props): React.JS
             value={exercise.bars}
             onChange={(e) => onChange({ ...exercise, bars: Number(e.target.value) })}
           >
-            {[4, 8, 16, 32].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
+            {[...new Set([...BAR_OPTIONS, exercise.bars])]
+              .sort((a, b) => a - b)
+              .map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
           </select>
         </label>
         <label>
-          Count-in
+          Introduzione
           <select
             value={exercise.countInBars}
             onChange={(e) => onChange({ ...exercise, countInBars: Number(e.target.value) })}
@@ -99,12 +118,6 @@ export function ExerciseConfig({ exercise, onChange, onStart }: Props): React.JS
           ))}
         </tbody>
       </table>
-      <p>
-        <button className="primary" disabled={!hasParts} onClick={onStart}>
-          Parti
-        </button>
-        {!hasParts && <span className="muted"> Scegli almeno uno strumento.</span>}
-      </p>
     </>
   )
 }

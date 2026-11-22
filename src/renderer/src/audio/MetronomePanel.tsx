@@ -85,7 +85,7 @@ export function MetronomePanel(): React.JSX.Element {
           onChange={(e) => changeBpm(Number(e.target.value))}
         />
         <label>
-          Count-in (battute)
+          Introduzione (battute)
           <select
             value={countInBars}
             disabled={running}
@@ -96,7 +96,7 @@ export function MetronomePanel(): React.JSX.Element {
             <option value={2}>2</option>
           </select>
         </label>
-        <button onClick={running ? stop : () => void start()}>{running ? 'Stop' : 'Start'}</button>
+        <button onClick={running ? stop : () => void start()}>{running ? 'Ferma' : 'Avvia'}</button>
       </div>
       <div className="beats">
         {Array.from({ length: BEATS_PER_BAR }, (_, i) => (
@@ -113,7 +113,7 @@ export function MetronomePanel(): React.JSX.Element {
       </div>
       <p className="muted">
         {current
-          ? `${current.isCountIn ? 'Count-in' : 'Battuta'} ${current.bar + 1 - (current.isCountIn ? 0 : countInBars)} · movimento ${current.beatInBar + 1}`
+          ? `${current.isCountIn ? 'Introduzione' : 'Battuta'} ${current.bar + 1 - (current.isCountIn ? 0 : countInBars)} · movimento ${current.beatInBar + 1}`
           : 'Fermo'}
       </p>
     </section>

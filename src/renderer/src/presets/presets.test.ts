@@ -3,6 +3,7 @@ import { activeInstruments, generateGrid } from '../engine/grid'
 import { DEFAULT_EXERCISE, isValidExercise } from '../storage/exerciseStorage'
 import { deletePreset, loadPresets, savePreset } from '../storage/presetStorage'
 import { BEAT_PRESETS, exerciseFromBeat } from './beats'
+import { EXERCISE_PROPOSALS } from './proposals'
 
 function fakeStorage(): Pick<Storage, 'getItem' | 'setItem'> {
   const store = new Map<string, string>()
@@ -89,5 +90,31 @@ describe('preset utente', () => {
     expect(loadPresets(st)).toEqual([])
     st.setItem('itp.presets', 'non json')
     expect(loadPresets(st)).toEqual([])
+  })
+})
+
+describe('esercizi proposti', () => {
+  it('hanno id unici ed esercizi validi', () => {
+    expect(new Set(EXERCISE_PROPOSALS.map((p) => p.id)).size).toBe(EXERCISE_PROPOSALS.length)
+    for (const p of EXERCISE_PROPOSALS) {
+      expect(isValidExercise(p.exercise)).toBe(true)
+      expect(activeInstruments(p.exercise).length).toBeGreaterThan(0)
+    }
+  })
+
+  it('sono abbastanza lunghi (almeno 32 battute)', () => {
+    for (const p of EXERCISE_PROPOSALS) expect(p.exercise.bars).toBeGreaterThanOrEqual(32)
+  })
+
+  it('generano colpi per tutti gli strumenti attivi', () => {
+    for (const p of EXERCISE_PROPOSALS) {
+      const grid = generateGrid(p.exercise, 0)
+      const found = new Set(grid.map((h) => h.instrument))
+      expect(found).toEqual(new Set(activeInstruments(p.exercise)))
+    }
+  })
+
+  it('l’esercizio iniziale dura almeno 32 battute', () => {
+    expect(DEFAULT_EXERCISE.bars).toBeGreaterThanOrEqual(32)
   })
 })

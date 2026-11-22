@@ -11,7 +11,7 @@ import { loadExercise, saveExercise } from '../storage/exerciseStorage'
 import { ExerciseConfig } from './ExerciseConfig'
 import { LiveView } from './LiveView'
 
-type Phase = 'config' | 'running' | 'done'
+type Phase = 'config' | 'starting' | 'running' | 'done'
 
 function StatsRow({ label, s }: { label: string; s: Stats }): React.JSX.Element {
   const sign = s.meanOffsetMs > 0 ? '+' : ''
@@ -54,6 +54,7 @@ export function ExercisePanel(): React.JSX.Element {
   })
 
   const start = async (): Promise<void> => {
+    setPhase('starting')
     const mapping = loadMapping()
     const s = new ExerciseSession(exercise, (n) => noteToInstrument(mapping, n), loadLatency())
     metronome.current?.dispose()
@@ -75,6 +76,7 @@ export function ExercisePanel(): React.JSX.Element {
     } catch (e) {
       metronome.current.dispose()
       setError(e instanceof Error ? e.message : String(e))
+      setPhase('config')
     }
   }
 
@@ -105,6 +107,7 @@ export function ExercisePanel(): React.JSX.Element {
       {phase === 'config' && (
         <ExerciseConfig exercise={exercise} onChange={change} onStart={() => void start()} />
       )}
+      {phase === 'starting' && <p className="muted">Avvio…</p>}
       {phase === 'running' && session && (
         <>
           <LiveView session={session} onOver={over} />
@@ -122,9 +125,9 @@ export function ExercisePanel(): React.JSX.Element {
                 <th>Precisione</th>
                 <th>Colpiti</th>
                 <th>Mancati</th>
-                <th>Extra</th>
+                <th>Colpi in più</th>
                 <th>Scarto medio</th>
-                <th>Costanza (dev. st.)</th>
+                <th>Costanza (deviazione)</th>
               </tr>
             </thead>
             <tbody>
@@ -136,9 +139,10 @@ export function ExercisePanel(): React.JSX.Element {
             </tbody>
           </table>
           <p>
-            <button className="primary" onClick={() => setPhase('config')}>
-              Nuovo esercizio
-            </button>
+            <button className="primary" onClick={() => void start()}>
+              Riprova
+            </button>{' '}
+            <button onClick={() => setPhase('config')}>Nuovo esercizio</button>
           </p>
         </>
       )}

@@ -128,9 +128,12 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 - [x] Preset di esercizi salvati e beat da praticare (`presets/`, `storage/presetStorage.ts`)
 
 ### Fase 7 — App installabile
-- [ ] Build con electron-builder (target mac, `dir` o `dmg`), icona e nome
-- [ ] Copia in */Applicazioni* e sblocco al primo avvio (tasto destro → Apri, oppure
-      `xattr -cr "/Applications/In The Pocket.app"`)
+- [x] Build con electron-builder (target mac `dir` + `dmg`, senza firma), icona e nome *(`npm run build:mac`, esce in `dist/`; sul Mac Intel dà un'app x86_64)*
+- [x] Copia in */Applicazioni* e sblocco al primo avvio *(copiata da terminale: non ha quarantena e si apre con doppio clic; se invece la scarichi o la sposti da un altro Mac: tasto destro → Apri, oppure
+      `xattr -cr "/Applications/In The Pocket.app"`)*
+- [ ] Provare l'app installata con la batteria (MIDI, audio, un esercizio completo)
+
+**Fatto quando**: l'app si apre da Launchpad/Applicazioni e funziona come in `npm run dev`.
 
 ### Fase 8 — Extra (a piacere)
 - Speed trainer: +N BPM a ogni giro superato con una soglia di precisione

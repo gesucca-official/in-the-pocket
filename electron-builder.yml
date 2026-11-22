@@ -19,6 +19,12 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  target:
+    - dir
+    - dmg
+  category: public.app-category.music
+  # Uso personale: nessuna firma Apple (al primo avvio serve il tasto destro → Apri).
+  identity: null
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
@@ -33,6 +39,3 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates

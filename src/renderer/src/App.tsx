@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CalibrationPanel } from './calibration/CalibrationPanel'
 import { MetronomePanel } from './audio/MetronomePanel'
 import { MappingPanel } from './midi/MappingPanel'
 import { MidiMonitor } from './midi/MidiMonitor'
@@ -26,6 +27,7 @@ function App(): React.JSX.Element {
         <ExercisePanel />
       ) : (
         <>
+          <CalibrationPanel />
           <MappingPanel />
           <MetronomePanel />
           <MidiMonitor />

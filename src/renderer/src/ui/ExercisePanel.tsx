@@ -5,6 +5,7 @@ import { summarize, type Stats } from '../engine/scorer'
 import type { Exercise } from '../engine/types'
 import { INSTRUMENT_LABELS, noteToInstrument } from '../midi/padMapping'
 import { useMidiNoteOn } from '../midi/useMidiNoteOn'
+import { hasCalibration, loadLatency } from '../storage/calibrationStorage'
 import { loadMapping } from '../storage/padMappingStorage'
 import { loadExercise, saveExercise } from '../storage/exerciseStorage'
 import { ExerciseConfig } from './ExerciseConfig'
@@ -54,7 +55,7 @@ export function ExercisePanel(): React.JSX.Element {
 
   const start = async (): Promise<void> => {
     const mapping = loadMapping()
-    const s = new ExerciseSession(exercise, (n) => noteToInstrument(mapping, n))
+    const s = new ExerciseSession(exercise, (n) => noteToInstrument(mapping, n), loadLatency())
     metronome.current?.dispose()
     metronome.current = new Metronome({
       bpm: exercise.bpm,
@@ -94,6 +95,13 @@ export function ExercisePanel(): React.JSX.Element {
     <section className="panel">
       <h2>Esercizio</h2>
       {error && <p className="error">Impossibile avviare l&apos;audio: {error}</p>}
+      {phase === 'config' && (
+        <p className="muted">
+          {hasCalibration()
+            ? `Latenza calibrata: ${loadLatency().toFixed(1)} ms`
+            : 'Non calibrata: vai in Strumenti → Calibrazione per misurare la latenza.'}
+        </p>
+      )}
       {phase === 'config' && (
         <ExerciseConfig exercise={exercise} onChange={change} onStart={() => void start()} />
       )}

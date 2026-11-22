@@ -31,7 +31,7 @@ in-the-pocket/
     midi/                 MidiMonitor ✅, useMidiNoteOn ✅ (hook ingresso), padMapping + MappingPanel ✅ (modalità "learn")
     audio/                Metronome (scheduler con lookahead), clock (orologio audio ↔ performance.now)
     engine/               ✅ types, rules (soglie/punti), grid, matcher, scorer + engine.test.ts
-    calibration/          misura della latenza
+    calibration/          ✅ misura della latenza (calibrate.ts + CalibrationPanel)
     storage/              impostazioni, preset, storico
     ui/                   schermate: Config, Live, Risultati, Storico, Mappatura, Calibrazione
 ```
@@ -116,9 +116,9 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 **Fatto quando**: suonando l'esercizio si vede subito se si è avanti o indietro.
 
 ### Fase 5 — Calibrazione
-- [ ] 16 click in 4ti; l'utente colpisce un pad qualsiasi; si scartano i primi 4 colpi;
+- [x] 16 click in 4ti; l'utente colpisce un pad qualsiasi; si scartano i primi 4 colpi;
       la mediana degli scarti diventa `latencyOffsetMs`, salvata
-- [ ] Ripetibile quando cambi cuffie o casse
+- [x] Ripetibile quando cambi cuffie o casse
 
 ### Fase 6 — Punteggio e storico
 - [x] `Scorer` con le statistiche descritte sopra (con test)

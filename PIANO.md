@@ -28,7 +28,7 @@ in-the-pocket/
   src/main/index.ts       processo Electron: finestra, permessi MIDI, backgroundThrottling: false
   src/preload/            ponte tra Electron e interfaccia (per ora vuoto)
   src/renderer/src/       l'app vera e propria
-    midi/                 MidiMonitor ✅, poi MidiInput (accesso + eventi), PadMapping (modalità "learn")
+    midi/                 MidiMonitor ✅, useMidiNoteOn ✅ (hook ingresso), padMapping + MappingPanel ✅ (modalità "learn")
     audio/                Metronome (scheduler con lookahead), clock (orologio audio ↔ performance.now)
     engine/               ✅ types, rules (soglie/punti), grid, matcher, scorer + engine.test.ts
     calibration/          misura della latenza
@@ -98,8 +98,8 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 | Crash (due piatti) / Ride (centro, campana, bordo) | 55 e 49 / 51, 53, 59 |
 
 ### Fase 2 — Mappatura dei pad
-- [ ] Modalità "learn": scegli lo strumento, colpisci il pad, la nota viene assegnata (più note per strumento)
-- [ ] Mappatura salvata e ricaricata all'avvio
+- [x] Modalità "learn": scegli lo strumento, colpisci il pad, la nota viene assegnata (più note per strumento)
+- [x] Mappatura salvata e ricaricata all'avvio
 
 ### Fase 3 — Metronomo
 - [x] Scheduler con lookahead, click con accento, BPM regolabile, count-in

@@ -10,16 +10,25 @@ interface MidiLogEntry {
   timeStamp: number
 }
 
-const MAX_ENTRIES = 40
+const MAX_ENTRIES = 15
+
+interface Seen {
+  kind: 'note' | 'cc'
+  number: number
+  count: number
+  lastValue: number
+}
 
 /** Fase 1: mostra in tempo reale i messaggi MIDI in arrivo da tutti gli ingressi. */
 export function MidiMonitor(): React.JSX.Element {
   const [inputs, setInputs] = useState<string[]>([])
   const [log, setLog] = useState<MidiLogEntry[]>([])
+  const [seen, setSeen] = useState<Record<string, Seen>>({})
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let access: MIDIAccess | null = null
+    let cancelled = false
     let counter = 0
 
     const onMessage = (event: MIDIMessageEvent): void => {
@@ -40,6 +49,16 @@ export function MidiMonitor(): React.JSX.Element {
         timeStamp: event.timeStamp
       }
       setLog((prev) => [entry, ...prev].slice(0, MAX_ENTRIES))
+      const id = `${entry.kind}-${entry.number}`
+      setSeen((prev) => ({
+        ...prev,
+        [id]: {
+          kind: entry.kind,
+          number: entry.number,
+          count: (prev[id]?.count ?? 0) + 1,
+          lastValue: entry.value
+        }
+      }))
     }
 
     const bindInputs = (): void => {
@@ -55,6 +74,7 @@ export function MidiMonitor(): React.JSX.Element {
     navigator
       .requestMIDIAccess()
       .then((a) => {
+        if (cancelled) return
         access = a
         access.onstatechange = bindInputs
         bindInputs()
@@ -62,6 +82,7 @@ export function MidiMonitor(): React.JSX.Element {
       .catch((e: unknown) => setError(String(e)))
 
     return () => {
+      cancelled = true
       access?.inputs.forEach((input) => (input.onmidimessage = null))
       if (access) access.onstatechange = null
     }
@@ -74,6 +95,38 @@ export function MidiMonitor(): React.JSX.Element {
       <p className="muted">
         Ingressi: {inputs.length ? inputs.join(', ') : 'nessun dispositivo MIDI collegato'}
       </p>
+      <button
+        onClick={() => {
+          setLog([])
+          setSeen({})
+        }}
+      >
+        Svuota
+      </button>
+      <h3>Note e CC visti (uno per riga)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nota / CC</th>
+            <th>Colpi</th>
+            <th>Ultima velocity / valore</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.values(seen)
+            .sort((a, b) => a.kind.localeCompare(b.kind) || a.number - b.number)
+            .map((r) => (
+              <tr key={`${r.kind}-${r.number}`}>
+                <td>{r.kind === 'note' ? 'Note On' : 'CC'}</td>
+                <td>{r.number}</td>
+                <td>{r.count}</td>
+                <td>{r.lastValue}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <h3>Ultimi {MAX_ENTRIES} messaggi</h3>
       <table>
         <thead>
           <tr>

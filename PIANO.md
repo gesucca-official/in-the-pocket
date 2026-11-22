@@ -76,8 +76,8 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 ### Fase 0 — Preparazione del Mac
 - [ ] Collegare il modulo via USB e verificare che compaia in *Configurazione MIDI Audio*
 - [ ] Controllare nel menu del modulo le impostazioni MIDI (canale, uscita USB attiva)
-- [ ] Installare Node.js LTS (es. via Homebrew) e git
-- [ ] Clonare la repo da GitHub ed eseguire `npm install`
+- [x] Installare Node.js LTS (es. via Homebrew) e git
+- [x] Clonare la repo da GitHub ed eseguire `npm install`
 - [x] Creare il progetto con electron-vite (React + TS) dentro la repo, commit *(fatto da Windows)*
 
 **Fatto quando**: `npm run dev` apre la finestra dell'app sul Mac.
@@ -85,17 +85,17 @@ Ogni fase si chiude con l'app funzionante e provata suonando.
 ### Fase 1 — Monitor MIDI (prova tecnica)
 - [x] Permesso MIDI in Electron, elenco dei dispositivi MIDI in ingresso *(scritto, da provare col modulo)*
 - [x] Lista in tempo reale dei colpi: nota, velocity, timestamp, anche CC per il pedale hi-hat *(idem)*
-- [ ] Riempire la tabella delle note qui sotto colpendo ogni pad
+- [x] Riempire la tabella delle note qui sotto colpendo ogni pad
 
 **Fatto quando**: ogni pad della batteria compare nella lista.
 
 | Pad | Nota/e MIDI |
 |---|---|
-| Cassa | |
-| Rullante (pelle / cerchio) | |
-| Hi-hat chiuso / aperto / pedale | |
-| Tom 1 / 2 / 3 | |
-| Crash / Ride | |
+| Cassa | 36 |
+| Rullante (pelle / cerchio) | 38 / 37 |
+| Hi-hat chiuso / aperto / pedale | 42 / 46 / 44 (chick); pedale: CC 4 |
+| Tom 1 / 2 / 3 | 48 / 45 / 43 |
+| Crash (due piatti) / Ride (centro, campana, bordo) | 55 e 49 / 51, 53, 59 |
 
 ### Fase 2 — Mappatura dei pad
 - [ ] Modalità "learn": scegli lo strumento, colpisci il pad, la nota viene assegnata (più note per strumento)
